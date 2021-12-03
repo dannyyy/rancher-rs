@@ -3,7 +3,7 @@ use eyre::eyre;
 mod types;
 
 #[derive(Debug)]
-struct RancherClient {
+pub struct RancherClient {
     bearer_token: String,
     http: reqwest::Client,
     base_url: reqwest::Url,
