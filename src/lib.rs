@@ -1,3 +1,4 @@
+use crate::types::{Collection, NodePool};
 use eyre::eyre;
 
 mod types;
@@ -58,22 +59,20 @@ impl RancherClient {
         Ok(RancherClient::new(server_spec.token_key, server_spec.url))
     }
 
-    pub async fn node_pools(&self) -> eyre::Result<()> {
+    pub async fn node_pools(&self) -> eyre::Result<Collection<NodePool>> {
         let nodepools = self
             .http
             .get(self.base_url.join("v3/nodepools").unwrap())
             .bearer_auth(&self.bearer_token)
             .send()
             .await?;
-        println!("{:#?}", nodepools);
 
         let bytes = nodepools.bytes().await?;
         let string = String::from_utf8(bytes.to_vec())?;
 
-        let json: serde_json::Value = serde_json::from_str(&string)?;
+        let collection: Collection<NodePool> = serde_json::from_str(&string)?;
 
-        println!("{}", serde_json::to_string_pretty(&json)?);
-        Ok(())
+        Ok(collection)
     }
 
     pub async fn set_drain_before_delete(
