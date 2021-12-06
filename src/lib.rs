@@ -1,4 +1,4 @@
-use crate::types::{Collection, NodePool};
+use crate::types::{Cluster, Collection, NodePool};
 use eyre::eyre;
 
 mod types;
@@ -60,17 +60,33 @@ impl RancherClient {
     }
 
     pub async fn node_pools(&self) -> eyre::Result<Collection<NodePool>> {
-        let nodepools = self
+        let response = self
             .http
             .get(self.base_url.join("v3/nodepools").unwrap())
             .bearer_auth(&self.bearer_token)
             .send()
             .await?;
 
-        let bytes = nodepools.bytes().await?;
+        let bytes = response.bytes().await?;
         let string = String::from_utf8(bytes.to_vec())?;
 
         let collection: Collection<NodePool> = serde_json::from_str(&string)?;
+
+        Ok(collection)
+    }
+
+    pub async fn clusters(&self) -> eyre::Result<Collection<Cluster>> {
+        let response = self
+            .http
+            .get(self.base_url.join("v3/clusters").unwrap())
+            .bearer_auth(&self.bearer_token)
+            .send()
+            .await?;
+
+        let bytes = response.bytes().await?;
+        let string = String::from_utf8(bytes.to_vec())?;
+
+        let collection: Collection<Cluster> = serde_json::from_str(&string)?;
 
         Ok(collection)
     }
@@ -130,6 +146,13 @@ mod test {
         let rc = RancherClient::from_config_file("https://console.aws.dockyard.viasat.io").unwrap();
 
         rc.node_pools().await.unwrap();
+    }
+
+    #[tokio::test]
+    async fn test_get_clusters() {
+        let rc = RancherClient::from_config_file("https://console.aws.dockyard.viasat.io").unwrap();
+
+        rc.clusters().await.unwrap();
     }
 
     #[tokio::test]

@@ -1,3 +1,6 @@
+mod cluster;
+pub use cluster::*;
+
 mod collection;
 pub use collection::*;
 
