@@ -1,3 +1,9 @@
+0.1.5
+--
+
+ * Making aksStatus optional
+ * Better error handling with a refactored parameterized HTTP GET function
+
 0.1.4
 --
 

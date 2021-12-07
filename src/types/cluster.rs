@@ -7,7 +7,7 @@ pub struct Cluster {
     pub agent_features: Option<HashMap<String, bool>>,
     pub agent_image: String,
     pub agent_image_override: String,
-    pub aks_status: HashMap<String, Option<String>>,
+    pub aks_status: Option<HashMap<String, Option<String>>>,
     pub allocatable: HashMap<String, String>,
     pub annotations: HashMap<String, String>,
     // answers:

@@ -59,34 +59,37 @@ impl RancherClient {
         Ok(RancherClient::new(server_spec.token_key, server_spec.url))
     }
 
-    pub async fn node_pools(&self) -> eyre::Result<Collection<NodePool>> {
+    async fn do_collection_request<T>(&self, path: &str) -> eyre::Result<Collection<T>>
+    where
+        T: serde::de::DeserializeOwned,
+    {
         let response = self
             .http
-            .get(self.base_url.join("v3/nodepools").unwrap())
+            .get(self.base_url.join(path).unwrap())
             .bearer_auth(&self.bearer_token)
             .send()
             .await?;
-
+        let status = response.status();
         let bytes = response.bytes().await?;
         let string = String::from_utf8(bytes.to_vec())?;
 
-        let collection: Collection<NodePool> = serde_json::from_str(&string)?;
+        if !status.is_success() {
+            return Err(eyre!("http {:#?}: {}", status, string));
+        }
+
+        let collection = serde_json::from_str(&string)?;
+
+        Ok(collection)
+    }
+
+    pub async fn node_pools(&self) -> eyre::Result<Collection<NodePool>> {
+        let collection = self.do_collection_request("v3/nodepools").await?;
 
         Ok(collection)
     }
 
     pub async fn clusters(&self) -> eyre::Result<Collection<Cluster>> {
-        let response = self
-            .http
-            .get(self.base_url.join("v3/clusters").unwrap())
-            .bearer_auth(&self.bearer_token)
-            .send()
-            .await?;
-
-        let bytes = response.bytes().await?;
-        let string = String::from_utf8(bytes.to_vec())?;
-
-        let collection: Collection<Cluster> = serde_json::from_str(&string)?;
+        let collection = self.do_collection_request("v3/clusters").await?;
 
         Ok(collection)
     }
