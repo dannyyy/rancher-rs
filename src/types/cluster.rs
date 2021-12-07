@@ -4,7 +4,7 @@ use std::collections::HashMap;
 #[serde(rename_all = "camelCase")]
 pub struct Cluster {
     pub actions: HashMap<String, String>,
-    pub agent_features: HashMap<String, bool>,
+    pub agent_features: Option<HashMap<String, bool>>,
     pub agent_image: String,
     pub agent_image_override: String,
     pub aks_status: HashMap<String, Option<String>>,

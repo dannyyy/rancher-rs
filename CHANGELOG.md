@@ -1,3 +1,8 @@
+0.1.4
+--
+
+ * Talked to a RKE API that did not return agent features, making it optional
+
 0.1.3
 --
 
