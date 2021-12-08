@@ -20,22 +20,7 @@ impl RancherClient {
     }
 
     pub fn from_config_file(rancher_host: &str) -> eyre::Result<Self> {
-        let home_dir = dirs_next::home_dir();
-        let home_dir = if let Some(p) = home_dir {
-            p
-        } else {
-            return Err(eyre!("missing home dir"));
-        };
-
-        let cli2_path = home_dir.join(".rancher/cli2.json");
-        if !cli2_path.exists() {
-            return Err(eyre!("rancher's ~/.rancher/cli2.json is missing"));
-        }
-
-        let cli2_data = std::fs::read_to_string(cli2_path)?;
-        let parsed_cli2: crate::types::ConfigFile = serde_json::from_slice(cli2_data.as_bytes())?;
-        // let parsed_cli2: serde_json::Value = serde_json::from_slice(cli2_data.as_bytes())?;
-        // parsed_cli2["Servers"].as_object().unwrap().iter().map(|(k,v)| (k,v)| )
+        let parsed_cli2 = Self::config_file()?;
 
         let server_names: Vec<_> = parsed_cli2
             .servers
@@ -57,6 +42,25 @@ impl RancherClient {
         let (_, server_spec) = server.unwrap();
 
         Ok(RancherClient::new(server_spec.token_key, server_spec.url))
+    }
+
+    pub fn config_file() -> eyre::Result<crate::types::ConfigFile> {
+        let home_dir = dirs_next::home_dir();
+        let home_dir = if let Some(p) = home_dir {
+            p
+        } else {
+            return Err(eyre!("missing home dir"));
+        };
+
+        let cli2_path = home_dir.join(".rancher/cli2.json");
+        if !cli2_path.exists() {
+            return Err(eyre!("rancher's ~/.rancher/cli2.json is missing"));
+        }
+
+        let cli2_data = std::fs::read_to_string(cli2_path)?;
+        let parsed_cli2: crate::types::ConfigFile = serde_json::from_slice(cli2_data.as_bytes())?;
+
+        Ok(parsed_cli2)
     }
 
     async fn do_collection_request<T>(&self, path: &str) -> eyre::Result<Collection<T>>

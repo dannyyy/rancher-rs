@@ -1,3 +1,8 @@
+0.1.6
+--
+
+ * client can provide parsed cli2 config file
+
 0.1.5
 --
 
