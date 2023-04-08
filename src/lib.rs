@@ -165,7 +165,9 @@ mod test {
     #[tokio::test]
     async fn test_update_node_pool() {
         let rc = RancherClient::new(
-            "token-sp8dq:758k5rm9rtd6lbvprvtk2nmfr2wgctj8xc752mm9hdgfhwhnbnk77v".into(),
+            std::env::var("RANCHER_TOKEN")
+                .expect("RANCHER_TOKEN must be set")
+                .into(),
             "https://console.aws.rancher.viasat.io".into(),
         );
 

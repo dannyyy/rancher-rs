@@ -5,12 +5,19 @@ edition = "2021"
 description = "A fledgling rancher client. Just to flip drainOnDelete for my node pools"
 license = "MIT"
 
-# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+[features]
+default = ["native-tls"]
+native-tls = ["reqwest/native-tls"]
+rustls = ["reqwest/rustls"]
 
 [dependencies]
 dirs-next = "2"
 eyre = "0"
-reqwest = { version = "0", features = ["json"] }
 tokio = { version = "1", features = ["full"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
+
+[dependencies.reqwest]
+version = "0"
+default-features = false
+features = ["json"]
