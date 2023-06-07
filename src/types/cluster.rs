@@ -21,8 +21,8 @@ pub struct Cluster {
     // capabilities:
     pub capacity: HashMap<String, String>,
     // certificates_expiration:
-    pub cluster_template_id: String,
-    pub cluster_template_revision_id: String,
+    pub cluster_template_id: Option<String>,
+    pub cluster_template_revision_id: Option<String>,
     // component_statuses:
     pub created: String,
     #[serde(rename = "createdTS")]

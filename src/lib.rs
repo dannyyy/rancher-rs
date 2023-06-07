@@ -81,7 +81,18 @@ impl RancherClient {
             return Err(eyre!("http {:#?}: {}", status, string));
         }
 
-        let collection = serde_json::from_str(&string)?;
+        let collection = match serde_json::from_str(&string) {
+            Ok(parsed_collection) => parsed_collection,
+            Err(e) => {
+                let value: serde_json::Value = serde_json::from_str(&string).unwrap();
+                return Err(eyre::eyre!(
+                    "could not parse API response, {}\n{}\n{:#?}",
+                    e,
+                    string,
+                    value
+                ));
+            }
+        };
 
         Ok(collection)
     }
@@ -150,14 +161,16 @@ mod test {
 
     #[tokio::test]
     async fn test_get_node_pools() {
-        let rc = RancherClient::from_config_file("https://console.aws.dockyard.viasat.io").unwrap();
+        let rc = RancherClient::from_config_file("https://console.aws.rancher.viasat.io").unwrap();
 
-        rc.node_pools().await.unwrap();
+        let node_pools = rc.node_pools().await.unwrap();
+
+        panic!("{:#?}", node_pools);
     }
 
     #[tokio::test]
     async fn test_get_clusters() {
-        let rc = RancherClient::from_config_file("https://console.aws.dockyard.viasat.io").unwrap();
+        let rc = RancherClient::from_config_file("https://console.aws.rancher.viasat.io").unwrap();
 
         rc.clusters().await.unwrap();
     }

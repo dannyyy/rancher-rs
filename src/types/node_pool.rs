@@ -1,7 +1,7 @@
 use super::RancherLinks;
 use std::collections::HashMap;
 
-#[derive(serde::Deserialize)]
+#[derive(Debug, serde::Deserialize)]
 #[serde(rename_all = "camelCase")]
 pub struct NodePool {
     pub base_type: String,
