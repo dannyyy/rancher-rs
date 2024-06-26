@@ -30,5 +30,6 @@ pub struct Cluster {
     pub creator_id: String,
     pub id: String,
     pub labels: HashMap<String, String>,
+    pub links: HashMap<String, String>,
     pub name: String,
 }
